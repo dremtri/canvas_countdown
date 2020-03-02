@@ -1,0 +1,91 @@
+<!--
+ * @Author: your name
+ * @Date: 2020-03-01 03:16:03
+ * @LastEditTime: 2020-03-01 11:48:45
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \canvas\countdown\util.html
+ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    #canvas {
+      display: block;
+      margin: auto auto;
+      border: 1px solid #eee;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas"></canvas>
+  <script>
+    const ROW = 10;
+    const COLUMN = 4;
+    const SIDE_LENGTH = 40
+    const RECT_GAP = 10
+    let rects = [];
+    window.result = [];
+    function initResult() {
+      for(let i = 0; i < ROW; i++) {
+        let tempArr = []
+        for(let j = 0; j < COLUMN; j++) {
+          tempArr[j] = 0;
+        }
+        window.result.push(tempArr);
+      }
+    }
+    window.onload = function () {
+      initResult();
+      let canvas = document.getElementById('canvas');
+      canvas.width = 1024;
+      canvas.height = 500;
+      let context = canvas.getContext('2d');
+      context.fillStyle = '#000';
+      for(let i = 0; i < ROW; i++) {
+        for(let j = 0; j < COLUMN; j++) {
+          context.beginPath();
+          let x = j * (SIDE_LENGTH + RECT_GAP);
+          let y = i * (SIDE_LENGTH + RECT_GAP);
+          rects.push({
+            x,
+            y,
+            row: i,
+            column: j
+          })
+          context.rect(x, y, SIDE_LENGTH, SIDE_LENGTH);
+          context.fill();
+          context.closePath();
+        }
+      }
+      canvas.addEventListener("mouseup", doMouseUp, false)
+      function doMouseUp (e) {
+        let x = e.clientX - canvas.getBoundingClientRect().left;
+        let y = e.clientY - canvas.getBoundingClientRect().top;
+        for(let i = 0; i < rects.length; i++) {
+          let item = rects[i];
+          context.beginPath();
+          context.rect(item.x, item.y, SIDE_LENGTH, SIDE_LENGTH);
+          if(context.isPointInPath(x, y)) {
+            let value = window.result[item.row][item.column];
+            if(value) {
+              context.fillStyle = '#000';
+              window.result[item.row][item.column] = 0;
+            } else {
+              context.fillStyle = 'red';
+              window.result[item.row][item.column] = 1;
+            }
+            context.closePath();
+            context.fill();
+          }
+        }
+        window.stringResult = JSON.stringify(window.result);
+      }
+    }
+    
+  </script>
+</body>
+</html>
